@@ -274,6 +274,7 @@ export class Virtualizer<TScrollElement = unknown, TItemElement = unknown> {
     startIndex: 0,
     endIndex: 0,
   }
+  private hasOptionsChanged: boolean = false;
 
   constructor(opts: VirtualizerOptions<TScrollElement, TItemElement>) {
     this.setOptions(opts)
@@ -305,6 +306,8 @@ export class Virtualizer<TScrollElement = unknown, TItemElement = unknown> {
       initialRect: { width: 0, height: 0 },
       ...opts,
     }
+
+    this.hasOptionsChanged = true;
   }
 
   private notify = () => {
@@ -325,6 +328,11 @@ export class Virtualizer<TScrollElement = unknown, TItemElement = unknown> {
 
   _willUpdate = () => {
     const scrollElement = this.options.getScrollElement()
+
+    if (this.hasOptionsChanged) {
+      this.hasOptionsChanged = false;
+      this.calculateRange();
+    }
 
     if (this.scrollElement !== scrollElement) {
       this.cleanup()
